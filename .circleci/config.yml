@@ -27,8 +27,7 @@ jobs:
           name: Push Docker image to Docker Hub
           command: |
             echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
-            docker push $DOCKERHUB_USERNAME/frontend:latesv1:${CIRCLE_SHA1}
-
+            docker push $DOCKERHUB_USERNAME/frontend:latesv1
 workflows:
   build_and_push:
     jobs:
