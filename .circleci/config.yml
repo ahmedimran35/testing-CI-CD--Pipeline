@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build-and-push:
     docker:
-      - image: cimg/node:latest  # Use the latest Node.js image for flexibility
+      - image: cimg/node:16 # Use the latest Node.js image for flexibility
 
     steps:
       - checkout
