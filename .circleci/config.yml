@@ -1,28 +1,24 @@
 version: 2.1
+
+orbs:
+  docker: circleci/docker@2.1
+
 jobs:
-  build:
+  build-and-push:
     docker:
-      - image: cimg/node:latest
+      - image: cimg/node:18.0
     steps:
       - checkout
-      - setup_remote_docker
-      - run: 
-          name: Install dependencies
-          command: npm install
-      - run:
-          name: Run tests
-          command: npm test
-      - run:
-          name: Build Docker image
-          command: docker build -t imranahmedn/frontend-test-1:${CIRCLE_SHA1} .
-      - run:
-          name: Push Docker image to Docker Hub
-          command: |
-            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker push imranahmedn/frontent-test-1:${CIRCLE_SHA1}
+      - docker/check
+      - docker/build:
+          image: imranahmedn/froentend:latest
+          tag: ${CIRCLE_SHA1}
+      - docker/push:
+          digest-path: /tmp/digest.txt
+          image: imranahmedn/froentend:latest
+          tag: ${CIRCLE_SHA1}
 
 workflows:
-  version: 2
-  build_and_push:
+  build-and-push:
     jobs:
-      - build
+      - build-and-push
