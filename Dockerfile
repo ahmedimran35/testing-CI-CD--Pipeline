@@ -19,7 +19,7 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy only the production build output from the builder stage
-COPY ../dist ./dist
+COPY . .
 
 # Expose the port used by your Vite app (usually 5173)
 EXPOSE 5173
