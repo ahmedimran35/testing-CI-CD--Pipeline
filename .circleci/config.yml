@@ -1,37 +1,40 @@
 version: 2.1
 
-orbs:
-  node: circleci/node@4.7.0
-  docker: circleci/docker@1.7.0
-
 jobs:
-  build:
+  test:  # Job name for testing (replace with a descriptive name)
     docker:
-      - image: cimg/node:18.16.0
-    steps:
-      - checkout
-      - node/install-packages:
-          pkg-manager: npm
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Build Docker image
-          command: docker build -t $DOCKERHUB_USERNAME/frontend:latesv1:$CIRCLE_SHA1 .
+      - image: circleci/node:18  # Use the specified Node.js version
 
-  push:
-    docker:
-      - image: cimg/base:stable
     steps:
-      - setup_remote_docker
-      - run:
-          name: Push Docker image to Docker Hub
+      - checkout  # Clone the project repository
+
+      - run:  # Install dependencies
+          name: Install npm dependencies
+          command: npm install --save
+
+  build-and-push:  # Job name for building and pushing the Docker image
+    docker:
+      - image: circleci/node:18  # Use the same Node.js version for consistency
+
+    steps:
+      - checkout  # Clone the project repository
+
+      - setup_remote_docker:  # Optional: Use Docker layer caching (adjust if needed)
+          docker_layer_caching: true  # Enable by default, disable only if required
+
+      - run:  # Build Docker image
+          name: Build Docker image
           command: |
-            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
-            docker push $DOCKERHUB_USERNAME/frontend:latesv1Alpha:$CIRCLE_SHA1
-workflows:
-  build_and_push:
-    jobs:
-      - build
-      - push:
-          requires:
-            - build
+            docker build -t frontendv1 -t imranahmedn/frontendv1:latest .  # Build with two tags
+
+      # Secure Docker Hub authentication (replace with your approach)
+      - run: |
+          # Option 1: Using encrypted environment variable (recommended)
+          docker login -u $DOCKERHUB_USERNAME -p $CIRCLECI_DOCKERHUB_PASSWORD
+
+          # Option 2: Using Docker login with password Stdin (less secure)
+          # echo $DOCKER_PASSWORD | docker login -u adijaiswal --password-stdin
+
+      - run:  # Push Docker image
+          name: Push Docker image to Docker Hub
+          command: docker push imranahmedn/frontendv1:latest
