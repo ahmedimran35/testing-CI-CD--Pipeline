@@ -38,3 +38,10 @@ jobs:
       - run:  # Push Docker image
           name: Push Docker image to Docker Hub
           command: docker push imranahmedn/frontendv1:latest
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - test
+      - build-and-push
