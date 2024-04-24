@@ -25,7 +25,7 @@ jobs:
       - run:  # Build Docker image
           name: Build Docker image
           command: |
-            docker build -t frontendv1 -t imranahmedn/frontendv1:latestv2 .  # Build with two tags
+            docker build -t frontendv1 -t imranahmedn/frontendv2:latest .  # Build with two tags
 
       # Secure Docker Hub authentication (replace with your approach)
       - run: |
