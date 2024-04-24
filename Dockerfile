@@ -20,6 +20,7 @@ WORKDIR /app
 
 # Copy only the production build output from the builder stage
 COPY . .
+RUN npm install vite
 
 # Expose the port used by your Vite app (usually 5173)
 EXPOSE 5173
