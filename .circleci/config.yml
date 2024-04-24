@@ -1,22 +1,40 @@
 version: 2.1
 
-orbs:
-  docker: circleci/docker@2.1
-
 jobs:
   build-and-push:
     docker:
-      - image: cimg/node:18.0
+      - image: cimg/node:latest  # Use the latest Node.js image for flexibility
+
     steps:
       - checkout
-      - docker/check
-      - docker/build:
-          image: imranahmedn/froentend:latest
-          tag: ${CIRCLE_SHA1}
-      - docker/push:
-          digest-path: /tmp/digest.txt
-          image: imranahmedn/froentend:latest
-          tag: ${CIRCLE_SHA1}
+
+      # Cache dependencies to speed up builds (optional)
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+          paths:
+            - ~/.npm
+
+      - run:
+          name: Install dependencies
+          command: npm install
+
+      # Cache dependencies to speed up builds (optional)
+      - save_cache:
+          key: v1-dependencies-{{ checksum "package.json" }}
+          paths:
+            - ~/.npm
+
+      # Build Docker image
+      - run:
+          name: Build Docker image
+          command: |
+            docker build -t $DOCKERHUB_USERNAME/$PROJECT_NAME:$CIRCLE_SHA1 .
+
+      # Push Docker image to Docker Hub (requires authentication)
+      - run: |
+          docker login -u $DOCKERHUB_USERNAME -p $CIRCLECI_DOCKERHUB_PASSWORD
+          docker push $DOCKERHUB_USERNAME/$PROJECT_NAME:$CIRCLE_SHA1
 
 workflows:
   build-and-push:
