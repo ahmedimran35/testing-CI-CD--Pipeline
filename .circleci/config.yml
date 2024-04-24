@@ -8,8 +8,7 @@ orbs:
 jobs:
   build:
     executor:
-      name: node/default
-      tag: '14'  # Specify the Node.js version
+      - image: cimg/node:16.13.2 # Specify the Node.js version
     steps:
       - checkout
       - node/install-packages:
