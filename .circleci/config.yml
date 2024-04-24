@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   test:  # Job name for testing (replace with a descriptive name)
     docker:
-      - image: circleci/node:18  # Use the specified Node.js version
+      - image: cimg/node:18.16.0  # Use the specified Node.js version
 
     steps:
       - checkout  # Clone the project repository
@@ -14,7 +14,7 @@ jobs:
 
   build-and-push:  # Job name for building and pushing the Docker image
     docker:
-      - image: circleci/node:18  # Use the same Node.js version for consistency
+      - image: cimg/node:18.16.0  # Use the same Node.js version for consistency
 
     steps:
       - checkout  # Clone the project repository
