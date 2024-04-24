@@ -1,0 +1,24 @@
+version: 2.1
+
+orbs:
+  docker: circleci/docker@2.1
+
+jobs:
+  build-and-push:
+    docker:
+      - image: cimg/node:18.0
+    steps:
+      - checkout
+      - docker/check
+      - docker/build:
+          image: imranahmedn/testing-frontend-v1
+          tag: ${CIRCLE_SHA1}
+      - docker/push:
+          digest-path: /tmp/digest.txt
+          image: imranahmedn/testing-frontend-v1
+          tag: ${CIRCLE_SHA1}
+
+workflows:
+  build-and-push:
+    jobs:
+      - build-and-push
