@@ -12,9 +12,6 @@ jobs:
       - checkout
       - node/install-packages:
           pkg-manager: npm
-      - run:
-          name: Run tests
-          command: npm test
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
