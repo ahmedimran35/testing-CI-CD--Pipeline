@@ -1,47 +1,37 @@
 version: 2.1
-
 jobs:
-  test:  # Job name for testing (replace with a descriptive name)
+  test:
     docker:
-      - image: cimg/node:18.16.0  # Use the specified Node.js version
-
+      - image: cimg/node:18.16.0
     steps:
-      - checkout  # Clone the project repository
-
-      - run:  # Install dependencies
+      - checkout
+      - run:
           name: Install npm dependencies
           command: npm install --save
-
-  build-and-push:  # Job name for building and pushing the Docker image
+      - run:
+          name: Run tests
+          command: npm test
+  build-and-push:
     docker:
-      - image: cimg/node:18.16.0  # Use the same Node.js version for consistency
-
+      - image: cimg/node:18.16.0
     steps:
-      - checkout  # Clone the project repository
-
-      - setup_remote_docker:  # Optional: Use Docker layer caching (adjust if needed)
-          docker_layer_caching: true  # Enable by default, disable only if required
-
-      - run:  # Build Docker image
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
           name: Build Docker image
           command: |
-            docker build -t frontendv1 -t imranahmedn/frontendv2:latest .  # Build with two tags
-
-      # Secure Docker Hub authentication (replace with your approach)
-      - run: |
-          # Option 1: Using encrypted environment variable (recommended)
+            docker build -t frontendv1 -t imranahmedn/frontendv2:latest .
+      - run:
           docker login -u $DOCKERHUB_USERNAME -p $CIRCLECI_DOCKERHUB_PASSWORD
-
-          # Option 2: Using Docker login with password Stdin (less secure)
-          # echo $DOCKER_PASSWORD | docker login -u adijaiswal --password-stdin
-
-      - run:  # Push Docker image
+      - run:
           name: Push Docker image to Docker Hub
           command: docker push imranahmedn/frontendv2:latest
-
 workflows:
   version: 2
   build:
     jobs:
       - test
-      - build-and-push
+      - build-and-push:
+          requires:
+            - test
